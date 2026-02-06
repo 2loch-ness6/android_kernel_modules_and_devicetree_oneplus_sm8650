@@ -39,7 +39,7 @@ check_command() {
         print_error "$1 is not installed"
         return 1
     else
-        print_info "$1 is installed: $(command -v $1)"
+        print_info "$1 is installed: $(command -v "$1")"
         return 0
     fi
 }
@@ -65,8 +65,13 @@ check_dependencies() {
     
     # Check Java
     if command -v java &> /dev/null; then
-        JAVA_VERSION=$(java -version 2>&1 | head -n 1 | cut -d'"' -f2 | cut -d'.' -f1)
-        if [ "$JAVA_VERSION" -ge 11 ]; then
+        # Get Java version (works for Java 8, 11, 17, etc.)
+        JAVA_VERSION=$(java -version 2>&1 | head -n 1 | awk -F'"' '{print $2}' | awk -F'.' '{print $1}')
+        # Handle Java 8 version format (1.8.x)
+        if [ "$JAVA_VERSION" = "1" ]; then
+            JAVA_VERSION=$(java -version 2>&1 | head -n 1 | awk -F'"' '{print $2}' | awk -F'.' '{print $2}')
+        fi
+        if [ "$JAVA_VERSION" -ge 11 ] 2>/dev/null; then
             print_info "Java $JAVA_VERSION is installed"
         else
             print_warning "Java 11 or later is required, found Java $JAVA_VERSION"
