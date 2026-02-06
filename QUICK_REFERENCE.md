@@ -1,11 +1,14 @@
 # Quick Reference - OnePlus 12 Kernel Build
 
 ## Device Info
-- **Device**: OnePlus 12 (waffle/pangu/enzo)
+- **Device**: OnePlus 12
+- **Primary Model**: **waffle-22825** (512GB Global) ⭐
 - **Platform**: SM8650 (pineapple) - Snapdragon 8 Gen 3
 - **OS**: Android 14 OxygenOS
 - **Architecture**: GKI 2.0 (Generic Kernel Image 2.0)
 - **Build Type**: User (`u` variant)
+
+> **📱 For waffle 512GB Global owners**: See [DEVICE_WAFFLE_512GB.md](DEVICE_WAFFLE_512GB.md)
 
 ## Quick Setup
 
@@ -70,12 +73,12 @@ kernel_platform/out/msm-kernel-pineapple-gki/dist/
 
 ### OnePlus 12 Variants
 
-| Variant | Project Code | DTBO File |
-|---------|--------------|-----------|
-| OnePlus 12 (Main) | waffle-22825 | waffle-22825-pineapple-overlay.dtbo |
-| OnePlus 12 (Variant) | waffle-22877 | waffle-22877-pineapple-overlay.dtbo |
-| OnePlus 12 (Pangu) | pangu-22111 | pangu-22111-pineapple-overlay.dtbo |
-| OnePlus 12 (Enzo) | enzo-23607 | enzo-23607-pineapple-overlay.dtbo |
+| Variant | Project Code | Storage | Region | DTBO File |
+|---------|--------------|---------|--------|-----------|
+| **OnePlus 12 Global** ⭐ | **waffle-22825** | **512GB** | **Global** | **waffle-22825-pineapple-overlay.dtbo** |
+| OnePlus 12 (CN) | waffle-22877 | 512GB | China | waffle-22877-pineapple-overlay.dtbo |
+| OnePlus 12 (Pangu) | pangu-22111 | Varies | China | pangu-22111-pineapple-overlay.dtbo |
+| OnePlus 12 (Enzo) | enzo-23607 | Varies | Regional | enzo-23607-pineapple-overlay.dtbo |
 
 ## Common Commands
 
@@ -238,6 +241,7 @@ fastboot reboot
 
 - **Main README**: [README.md](README.md)
 - **Detailed Guide**: [BUILD_GUIDE.md](BUILD_GUIDE.md)
+- **Device-Specific Guide**: [DEVICE_WAFFLE_512GB.md](DEVICE_WAFFLE_512GB.md) ⭐
 - **Setup Script**: [setup_build_env.sh](setup_build_env.sh)
 - **Kleaf Docs**: `kernel_platform/build/kernel/kleaf/README.md`
 

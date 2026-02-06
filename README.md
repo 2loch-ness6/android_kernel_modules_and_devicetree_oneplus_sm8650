@@ -5,12 +5,15 @@ This repository contains the kernel modules and device tree for the OnePlus 12 (
 ## Device Information
 
 - **Device**: OnePlus 12
-- **Codename**: waffle (22825/22877), pangu (22111), enzo (23607)
+- **Primary Variant**: **waffle-22825** (512GB Global) ⭐
+- **Other Variants**: waffle-22877 (CN), pangu-22111, enzo-23607
 - **Platform**: Qualcomm SM8650 (pineapple)
 - **SoC**: Snapdragon 8 Gen 3
 - **OS Version**: Android 14 OOS (OxygenOS)
 - **Build Type**: User build (`u` variant)
 - **Kernel Architecture**: GKI 2.0 (Generic Kernel Image 2.0)
+
+> **📱 Have the waffle 512GB Global variant?** See [DEVICE_WAFFLE_512GB.md](DEVICE_WAFFLE_512GB.md) for device-specific instructions.
 
 ## Prerequisites
 
@@ -184,14 +187,16 @@ For advanced users, you can customize the build:
 
 OnePlus 12 device variants and their corresponding overlays:
 
-| Variant | Project Code | Device Tree Overlay |
-|---------|--------------|---------------------|
-| OnePlus 12 (Main) | waffle-22825 | waffle-22825-pineapple-overlay.dtbo |
-| OnePlus 12 (Variant) | waffle-22877 | waffle-22877-pineapple-overlay.dtbo |
-| OnePlus 12 (Pangu) | pangu-22111 | pangu-22111-pineapple-overlay.dtbo |
-| OnePlus 12 (Enzo) | enzo-23607 | enzo-23607-pineapple-overlay.dtbo |
+| Variant | Project Code | Storage | Region | Device Tree Overlay |
+|---------|--------------|---------|--------|---------------------|
+| **OnePlus 12 Global** ⭐ | **waffle-22825** | **512GB** | **Global/International** | **waffle-22825-pineapple-overlay.dtbo** |
+| OnePlus 12 (CN) | waffle-22877 | 512GB | China | waffle-22877-pineapple-overlay.dtbo |
+| OnePlus 12 (Pangu) | pangu-22111 | Varies | China | pangu-22111-pineapple-overlay.dtbo |
+| OnePlus 12 (Enzo) | enzo-23607 | Varies | Regional | enzo-23607-pineapple-overlay.dtbo |
 
-Each variant includes board revisions: EVB, EVT1, DVT, PVT
+Each variant includes board revisions: EVB, EVT1, EVT2, DVT1, DVT2, PVT1
+
+> **Note**: The waffle-22825 512GB Global variant is the most common international model and is fully supported by this build.
 
 ## Troubleshooting
 
@@ -290,6 +295,7 @@ This is an open source release from OnePlus. Building and flashing custom kernel
 ## Additional Resources
 
 - [Kleaf Documentation](kernel_platform/build/kernel/kleaf/README.md)
+- **[Device-Specific: OnePlus 12 Waffle 512GB Global](DEVICE_WAFFLE_512GB.md)** ⭐
 - [OnePlus Open Source](https://github.com/OnePlusOSS)
 - [Qualcomm Linux Kernel](https://git.codelinaro.org)
 - [Android Kernel Documentation](https://source.android.com/devices/architecture/kernel)
