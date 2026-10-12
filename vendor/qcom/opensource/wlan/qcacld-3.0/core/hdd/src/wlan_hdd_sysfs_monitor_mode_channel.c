@@ -83,6 +83,11 @@ __hdd_sysfs_monitor_mode_channel_store(struct net_device *net_dev,
 							hdd_ctx->pdev, val1),
 					    val2);
 
+	if (ret) {
+		hdd_err_rl("set_mon_chan failed: %d", ret);
+		return ret;
+	}
+
 	return count;
 }
 

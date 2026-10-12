@@ -4385,6 +4385,9 @@ static uint8_t sme_get_nss_chain_shift(enum QDF_OPMODE device_mode)
 		return OCB_NSS_CHAINS_SHIFT;
 	case QDF_TDLS_MODE:
 		return TDLS_NSS_CHAINS_SHIFT;
+	case QDF_MONITOR_MODE:
+		/* Monitor vdev is RX-only; reuse the STA chain config. */
+		return STA_NSS_CHAINS_SHIFT;
 
 	default:
 		sme_err("Device mode %d invalid", device_mode);

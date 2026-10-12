@@ -3284,6 +3284,56 @@ static void hdd_mon_turn_off_ps_and_wow(struct hdd_context *hdd_ctx)
 	ucfg_pmo_set_wow_enable(hdd_ctx->psoc, PMO_WOW_DISABLE_BOTH);
 }
 
+#ifdef WLAN_FEATURE_LOCAL_PKT_CAPTURE
+/**
+ * wlan_hdd_lpc_start_global_monitor() - start Local Packet Capture for the
+ * global (con_mode=4) monitor path
+ * @hdd_ctx: HDD context
+ *
+ * On WCN7850-class chips, monitor RX is delivered only via the Local Packet
+ * Capture status-ring reconstruction path, which runs only once LPC has been
+ * started (is_local_pkt_capture_running == true). The classic global-monitor
+ * (con_mode=4) open path programs the monitor filter but never starts LPC, so
+ * tcpdump on the radiotap netdev sees 0 frames. Start LPC here with an
+ * all-frames filter so global monitor mode captures as users expect, without
+ * needing the SET_MONITOR_MODE vendor command. This intentionally bypasses the
+ * INI and os_if concurrency gates for the global-monitor research use case.
+ *
+ * Return: none
+ */
+static void wlan_hdd_lpc_start_global_monitor(struct hdd_context *hdd_ctx)
+{
+	struct cdp_monitor_filter filter = {0};
+	void *soc;
+	QDF_STATUS status;
+
+	soc = cds_get_context(QDF_MODULE_ID_SOC);
+	if (!soc)
+		return;
+
+	if (cdp_is_local_pkt_capture_running(soc, OL_TXRX_PDEV_ID)) {
+		hdd_debug("LPC already running; not restarting");
+		return;
+	}
+
+	filter.mode = MON_FILTER_PASS;
+	filter.fp_mgmt = FILTER_MGMT_ALL;
+	filter.fp_data = FILTER_DATA_ALL;
+	filter.fp_ctrl = FILTER_CTRL_ALL;
+
+	status = cdp_start_local_pkt_capture(soc, OL_TXRX_PDEV_ID, &filter);
+	if (QDF_IS_STATUS_ERROR(status))
+		hdd_err("LPC global monitor start failed: %d", status);
+	else
+		hdd_info("LPC global monitor capture started (all frames)");
+}
+#else
+static inline void
+wlan_hdd_lpc_start_global_monitor(struct hdd_context *hdd_ctx)
+{
+}
+#endif
+
 /**
  * __hdd_mon_open() - HDD Open function
  * @dev: Pointer to net_device structure
@@ -3360,6 +3410,14 @@ static int __hdd_mon_open(struct net_device *dev)
 		ucfg_dp_bbm_apply_independent_policy(hdd_ctx->psoc, &param);
 		ucfg_dp_set_current_throughput_level(hdd_ctx->psoc,
 						     PLD_BUS_WIDTH_VERY_HIGH);
+
+		/*
+		 * WCN7850 delivers monitor RX only via Local Packet Capture.
+		 * Auto-start it on the global-monitor (con_mode=4) path so a
+		 * plain radiotap netdev + tcpdump captures frames.
+		 */
+		if (con_mode == QDF_GLOBAL_MONITOR_MODE)
+			wlan_hdd_lpc_start_global_monitor(hdd_ctx);
 	}
 
 	return ret;

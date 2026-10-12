@@ -6319,6 +6319,11 @@ void csr_get_vdev_type_nss(enum QDF_OPMODE dev_mode, uint8_t *nss_2g,
 		*nss_2g = mac_ctx->vdev_type_nss_2g.ndi;
 		*nss_5g = mac_ctx->vdev_type_nss_5g.ndi;
 		break;
+	case QDF_MONITOR_MODE:
+		/* Monitor vdev is RX-only; use the STA chain config. */
+		*nss_2g = mac_ctx->vdev_type_nss_2g.sta;
+		*nss_5g = mac_ctx->vdev_type_nss_5g.sta;
+		break;
 	default:
 		*nss_2g = 1;
 		*nss_5g = 1;
