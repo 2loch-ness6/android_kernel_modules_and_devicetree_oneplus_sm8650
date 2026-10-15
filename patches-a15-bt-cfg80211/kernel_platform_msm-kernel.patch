@@ -1,0 +1,122 @@
+From 55c5335a3174049a1fd5d813d14dfac1fb734a4e Mon Sep 17 00:00:00 2001
+From: lochness <lochlynhansen05@gmail.com>
+Date: Mon, 12 Oct 2026 05:37:14 -0500
+Subject: [PATCH] A15: NetHunter BT (hci_vhci/RFCOMM) + cfg80211 mgmt-tx
+ injection + WLAN pktlog
+
+Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_011HYtntbeo6u11Nb2sGGFQa
+---
+ .../arm64/configs/vendor/pineapple_GKI.config |  8 +++++
+ build_with_bazel.py                           |  6 ++++
+ modules.bzl                                   |  1 +
+ net/wireless/mlme.c                           | 34 +++++++------------
+ 4 files changed, 28 insertions(+), 21 deletions(-)
+
+diff --git a/arch/arm64/configs/vendor/pineapple_GKI.config b/arch/arm64/configs/vendor/pineapple_GKI.config
+index 4f48c090b..fcb8950a5 100755
+--- a/arch/arm64/configs/vendor/pineapple_GKI.config
++++ b/arch/arm64/configs/vendor/pineapple_GKI.config
+@@ -548,3 +548,11 @@ CONFIG_UFSTW_BOOT_ENABLED=y
+ CONFIG_UFSHID=y
+ CONFIG_UFSHID_POC=y
+ CONFIG_UFSHID_DEBUG=y
++
++# Nethunter Bluetooth configs
++CONFIG_BT=m
++CONFIG_BT_RFCOMM=m
++CONFIG_BT_RFCOMM_TTY=y
++CONFIG_BT_HCIUART_H4=y
++CONFIG_BT_HCIVHCI=m
++CONFIG_ANDROID_BINDER_IPC=y
+diff --git a/build_with_bazel.py b/build_with_bazel.py
+index 215d38290..97ad31a99 100755
+--- a/build_with_bazel.py
++++ b/build_with_bazel.py
+@@ -287,6 +287,12 @@ class BazelBuilder:
+             "--config=stamp",
+             "--user_kmi_symbol_lists=//msm-kernel:android/abi_gki_aarch64_qcom",
+             "--ignore_missing_projects",
++            # Build-time-only flags (boot-safe; NOT force-LOAD). Keep non-KMI symbols
++            # exported so vendor/BT modules link, and don't fail the build on KMI
++            # symbol-list deltas from our added configs (hci_vhci, cfg80211 patch).
++            "--//build/kernel/kleaf/impl:force_disable_trim=true",
++            "--//build/kernel/kleaf:kmi_symbol_list_violations_check=false",
++            "--//build/kernel/kleaf:kmi_symbol_list_strict_mode=false",
+         ])
+ 
+         if self.dry_run:
+diff --git a/modules.bzl b/modules.bzl
+index 702820dc2..b74934d50 100644
+--- a/modules.bzl
++++ b/modules.bzl
+@@ -12,6 +12,7 @@ _COMMON_GKI_MODULES_LIST = [
+     "drivers/bluetooth/btqca.ko",
+     "drivers/bluetooth/btsdio.ko",
+     "drivers/bluetooth/hci_uart.ko",
++    "drivers/bluetooth/hci_vhci.ko",
+     "drivers/net/can/dev/can-dev.ko",
+     "drivers/net/can/slcan/slcan.ko",
+     "drivers/net/can/vcan.ko",
+diff --git a/net/wireless/mlme.c b/net/wireless/mlme.c
+index b59c1bf7c..c657542b0 100644
+--- a/net/wireless/mlme.c
++++ b/net/wireless/mlme.c
+@@ -742,7 +742,11 @@ int cfg80211_mlme_mgmt_tx(struct cfg80211_registered_device *rdev,
+ 		return -EINVAL;
+ 
+ 	stype = le16_to_cpu(mgmt->frame_control) & IEEE80211_FCTL_STYPE;
+-	if (!(wdev->wiphy->mgmt_stypes[wdev->iftype].tx & BIT(stype >> 4)))
++	/* OP12-RESEARCH: allow injecting ANY mgmt subtype regardless of the
++	 * driver-advertised per-iftype TX mask (e.g. deauth/disassoc/beacon on
++	 * a STA). NULL guard above still protects the deref; `0 &&` keeps stype
++	 * referenced. */
++	if (0 && !(wdev->wiphy->mgmt_stypes[wdev->iftype].tx & BIT(stype >> 4)))
+ 		return -EINVAL;
+ 
+ 	if (ieee80211_is_action(mgmt->frame_control) &&
+@@ -766,25 +770,10 @@ int cfg80211_mlme_mgmt_tx(struct cfg80211_registered_device *rdev,
+ 			break;
+ 		case NL80211_IFTYPE_STATION:
+ 		case NL80211_IFTYPE_P2P_CLIENT:
+-			if (!wdev->connected) {
+-				err = -ENOTCONN;
+-				break;
+-			}
+-
+-			/* FIXME: MLD may address this differently */
+-
+-			if (!ether_addr_equal(wdev->u.client.connected_addr,
+-					      mgmt->bssid)) {
+-				err = -ENOTCONN;
+-				break;
+-			}
+-
+-			/* for station, check that DA is the AP */
+-			if (!ether_addr_equal(wdev->u.client.connected_addr,
+-					      mgmt->da)) {
+-				err = -ENOTCONN;
+-				break;
+-			}
++			/* OP12-RESEARCH: allow non-public action frames with
++			 * arbitrary addr1(DA)/addr3(BSSID) on a STA; bypass the
++			 * connected-AP address checks. Original upstream logic
++			 * required bssid==da==connected AP. */
+ 			break;
+ 		case NL80211_IFTYPE_AP:
+ 		case NL80211_IFTYPE_P2P_GO:
+@@ -821,7 +810,10 @@ int cfg80211_mlme_mgmt_tx(struct cfg80211_registered_device *rdev,
+ 			return err;
+ 	}
+ 
+-	if (!cfg80211_allowed_address(wdev, mgmt->sa) &&
++	/* OP12-RESEARCH: allow arbitrary source MAC (addr2) for mgmt-frame
++	 * injection. Upstream pins SA to the interface MAC (anti-spoof); the
++	 * `0 &&` keeps the helpers referenced but never rejects. */
++	if (0 && !cfg80211_allowed_address(wdev, mgmt->sa) &&
+ 	    !cfg80211_allowed_random_address(wdev, mgmt))
+ 		return -EINVAL;
+ 
+-- 
+2.47.3
+

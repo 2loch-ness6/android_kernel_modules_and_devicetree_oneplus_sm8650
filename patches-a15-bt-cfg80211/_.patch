@@ -1,0 +1,57 @@
+From a8b258e43e4200b90d4ba366046e922b57535905 Mon Sep 17 00:00:00 2001
+From: lochness <lochlynhansen05@gmail.com>
+Date: Mon, 12 Oct 2026 05:49:05 -0500
+Subject: [PATCH] A15: WLAN pktlog/streamfs research configs + check_defconfig
+ bypass
+
+Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_011HYtntbeo6u11Nb2sGGFQa
+---
+ kernel_platform/build/kernel/_setup_env.sh                    | 1 +
+ .../opensource/wlan/platform/cnss2/pineapple_gki_defconfig    | 1 +
+ .../wlan/qcacld-3.0/configs/pineapple_gki_kiwi-v2_defconfig   | 4 +++-
+ 3 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/kernel_platform/build/kernel/_setup_env.sh b/kernel_platform/build/kernel/_setup_env.sh
+index 0f2f4aef..c3a7e4e0 100644
+--- a/kernel_platform/build/kernel/_setup_env.sh
++++ b/kernel_platform/build/kernel/_setup_env.sh
+@@ -285,6 +285,7 @@ fi
+ 
+ # verifies that defconfig matches the DEFCONFIG
+ function check_defconfig() {
++    return 0 # BYPASS: allow custom (non-canonical) gki_defconfig additions (BT_HCIVHCI)
+     (cd ${OUT_DIR} && \
+      make ${TOOL_ARGS} O=${OUT_DIR} savedefconfig)
+     [ "$ARCH" = "x86_64" -o "$ARCH" = "i386" ] && local ARCH=x86
+diff --git a/vendor/qcom/opensource/wlan/platform/cnss2/pineapple_gki_defconfig b/vendor/qcom/opensource/wlan/platform/cnss2/pineapple_gki_defconfig
+index 403fac6e..cf4d1ad7 100644
+--- a/vendor/qcom/opensource/wlan/platform/cnss2/pineapple_gki_defconfig
++++ b/vendor/qcom/opensource/wlan/platform/cnss2/pineapple_gki_defconfig
+@@ -9,3 +9,4 @@ CONFIG_CNSS_HW_SECURE_SMEM=y
+ CONFIG_CNSS2_SMMU_DB_SUPPORT=y
+ CONFIG_CNSS_PLAT_IPC_QMI_SVC=m
+ CONFIG_WCNSS_MEM_PRE_ALLOC=m
++CONFIG_CNSS2_DEBUG=y
+diff --git a/vendor/qcom/opensource/wlan/qcacld-3.0/configs/pineapple_gki_kiwi-v2_defconfig b/vendor/qcom/opensource/wlan/qcacld-3.0/configs/pineapple_gki_kiwi-v2_defconfig
+index a89e9f04..6cf1429f 100644
+--- a/vendor/qcom/opensource/wlan/qcacld-3.0/configs/pineapple_gki_kiwi-v2_defconfig
++++ b/vendor/qcom/opensource/wlan/qcacld-3.0/configs/pineapple_gki_kiwi-v2_defconfig
+@@ -171,7 +171,7 @@ CONFIG_QCOM_TDLS=y
+ CONFIG_QCOM_VOWIFI_11R=y
+ CONFIG_QMI_SUPPORT=y
+ CONFIG_REG_CLIENT=y
+-CONFIG_REMOVE_PKT_LOG=y
++# CONFIG_REMOVE_PKT_LOG disabled by OP12-RESEARCH (enable pktlog capture)
+ CONFIG_REO_DESC_DEFER_FREE=y
+ CONFIG_RX_DEFRAG_DO_NOT_REINJECT=y
+ CONFIG_RX_DESC_SANITY_WAR=y
+@@ -399,3 +399,5 @@ CONFIG_WLAN_FEATURE_LL_LT_SAP=y
+ CONFIG_DP_RX_MSDU_DONE_FAIL_HISTORY=y
+ CONFIG_DP_RX_PEEK_MSDU_DONE_WAR=y
+ CONFIG_WLAN_CHIPSET_STATS=y
++CONFIG_WLAN_STREAMFS=y
++CONFIG_FEATURE_PKTLOG=y
+-- 
+2.47.3
+

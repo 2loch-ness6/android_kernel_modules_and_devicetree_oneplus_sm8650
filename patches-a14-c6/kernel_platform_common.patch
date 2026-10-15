@@ -1,0 +1,843 @@
+From 04e545993f9b7f436dd7f5b872a36f36e3e9cb74 Mon Sep 17 00:00:00 2001
+From: lochness <lochlynhansen05@gmail.com>
+Date: Mon, 12 Oct 2026 05:23:51 -0500
+Subject: [PATCH] A14 C6 docker/KABI + cfg80211/wlan local changes
+
+---
+ android/abi_gki_protected_exports_aarch64 | 345 ----------------------
+ android/abi_gki_protected_exports_x86_64  | 345 ----------------------
+ arch/arm64/configs/gki_defconfig          |  24 ++
+ include/linux/sched.h                     |   9 +-
+ modules.bzl                               |   1 +
+ net/wireless/mlme.c                       |  28 +-
+ 6 files changed, 40 insertions(+), 712 deletions(-)
+ delete mode 100644 android/abi_gki_protected_exports_aarch64
+ delete mode 100644 android/abi_gki_protected_exports_x86_64
+
+diff --git a/android/abi_gki_protected_exports_aarch64 b/android/abi_gki_protected_exports_aarch64
+deleted file mode 100644
+index 7d97572e6..000000000
+--- a/android/abi_gki_protected_exports_aarch64
++++ /dev/null
+@@ -1,345 +0,0 @@
+-__hci_cmd_send
+-__hci_cmd_sync
+-__hci_cmd_sync_ev
+-__hci_cmd_sync_sk
+-__hci_cmd_sync_status
+-__hci_cmd_sync_status_sk
+-__nfc_alloc_vendor_cmd_reply_skb
+-alloc_can_err_skb
+-alloc_can_skb
+-alloc_candev_mqs
+-alloc_canfd_skb
+-alloc_canxl_skb
+-arc4_crypt
+-arc4_setkey
+-baswap
+-bt_accept_dequeue
+-bt_accept_enqueue
+-bt_accept_unlink
+-bt_debugfs
+-bt_err
+-bt_err_ratelimited
+-bt_info
+-bt_procfs_cleanup
+-bt_procfs_init
+-bt_sock_ioctl
+-bt_sock_link
+-bt_sock_poll
+-bt_sock_reclassify_lock
+-bt_sock_recvmsg
+-bt_sock_register
+-bt_sock_stream_recvmsg
+-bt_sock_unlink
+-bt_sock_unregister
+-bt_sock_wait_ready
+-bt_sock_wait_state
+-bt_status
+-bt_to_errno
+-bt_warn
+-bt_warn_ratelimited
+-btbcm_check_bdaddr
+-btbcm_finalize
+-btbcm_initialize
+-btbcm_patchram
+-btbcm_read_pcm_int_params
+-btbcm_set_bdaddr
+-btbcm_setup_apple
+-btbcm_setup_patchram
+-btbcm_write_pcm_int_params
+-can_bus_off
+-can_change_mtu
+-can_change_state
+-can_dropped_invalid_skb
+-can_eth_ioctl_hwts
+-can_ethtool_op_get_ts_info_hwts
+-can_fd_dlc2len
+-can_fd_len2dlc
+-can_free_echo_skb
+-can_get_echo_skb
+-can_get_state_str
+-can_proto_register
+-can_proto_unregister
+-can_put_echo_skb
+-can_rx_offload_add_fifo
+-can_rx_offload_add_manual
+-can_rx_offload_add_timestamp
+-can_rx_offload_del
+-can_rx_offload_enable
+-can_rx_offload_get_echo_skb
+-can_rx_offload_irq_finish
+-can_rx_offload_irq_offload_fifo
+-can_rx_offload_irq_offload_timestamp
+-can_rx_offload_queue_tail
+-can_rx_offload_queue_timestamp
+-can_rx_offload_threaded_irq_finish
+-can_rx_register
+-can_rx_unregister
+-can_send
+-can_skb_get_frame_len
+-can_sock_destruct
+-cdc_ncm_bind_common
+-cdc_ncm_change_mtu
+-cdc_ncm_fill_tx_frame
+-cdc_ncm_rx_fixup
+-cdc_ncm_rx_verify_ndp16
+-cdc_ncm_rx_verify_ndp32
+-cdc_ncm_rx_verify_nth16
+-cdc_ncm_rx_verify_nth32
+-cdc_ncm_select_altsetting
+-cdc_ncm_tx_fixup
+-cdc_ncm_unbind
+-close_candev
+-free_candev
+-generic_mii_ioctl
+-h4_recv_buf
+-hci_alloc_dev_priv
+-hci_cmd_sync
+-hci_cmd_sync_cancel
+-hci_cmd_sync_queue
+-hci_conn_check_secure
+-hci_conn_security
+-hci_conn_switch_role
+-hci_free_dev
+-hci_get_route
+-hci_mgmt_chan_register
+-hci_mgmt_chan_unregister
+-hci_recv_diag
+-hci_recv_frame
+-hci_register_cb
+-hci_register_dev
+-hci_release_dev
+-hci_reset_dev
+-hci_resume_dev
+-hci_set_fw_info
+-hci_set_hw_info
+-hci_suspend_dev
+-hci_uart_register_device
+-hci_uart_tx_wakeup
+-hci_uart_unregister_device
+-hci_unregister_cb
+-hci_unregister_dev
+-hidp_hid_driver
+-ieee802154_alloc_hw
+-ieee802154_configure_durations
+-ieee802154_free_hw
+-ieee802154_hdr_peek
+-ieee802154_hdr_peek_addrs
+-ieee802154_hdr_pull
+-ieee802154_hdr_push
+-ieee802154_max_payload
+-ieee802154_register_hw
+-ieee802154_rx_irqsafe
+-ieee802154_stop_queue
+-ieee802154_unregister_hw
+-ieee802154_wake_queue
+-ieee802154_xmit_complete
+-ieee802154_xmit_error
+-ieee802154_xmit_hw_error
+-l2cap_add_psm
+-l2cap_chan_close
+-l2cap_chan_connect
+-l2cap_chan_create
+-l2cap_chan_del
+-l2cap_chan_list
+-l2cap_chan_put
+-l2cap_chan_send
+-l2cap_chan_set_defaults
+-l2cap_conn_get
+-l2cap_conn_put
+-l2cap_is_socket
+-l2cap_register_user
+-l2cap_unregister_user
+-l2tp_recv_common
+-l2tp_session_create
+-l2tp_session_dec_refcount
+-l2tp_session_delete
+-l2tp_session_get
+-l2tp_session_get_by_ifname
+-l2tp_session_get_nth
+-l2tp_session_inc_refcount
+-l2tp_session_register
+-l2tp_session_set_header_len
+-l2tp_sk_to_tunnel
+-l2tp_tunnel_create
+-l2tp_tunnel_dec_refcount
+-l2tp_tunnel_delete
+-l2tp_tunnel_get
+-l2tp_tunnel_get_nth
+-l2tp_tunnel_get_session
+-l2tp_tunnel_inc_refcount
+-l2tp_tunnel_register
+-l2tp_udp_encap_recv
+-l2tp_xmit_skb
+-lowpan_header_compress
+-lowpan_header_decompress
+-lowpan_nhc_add
+-lowpan_nhc_del
+-lowpan_register_netdev
+-lowpan_register_netdevice
+-lowpan_unregister_netdev
+-lowpan_unregister_netdevice
+-mii_check_gmii_support
+-mii_check_link
+-mii_check_media
+-mii_ethtool_get_link_ksettings
+-mii_ethtool_gset
+-mii_ethtool_set_link_ksettings
+-mii_ethtool_sset
+-mii_link_ok
+-mii_nway_restart
+-nfc_add_se
+-nfc_alloc_recv_skb
+-nfc_allocate_device
+-nfc_class
+-nfc_dep_link_is_up
+-nfc_driver_failure
+-nfc_find_se
+-nfc_fw_download_done
+-nfc_get_local_general_bytes
+-nfc_proto_register
+-nfc_proto_unregister
+-nfc_register_device
+-nfc_remove_se
+-nfc_se_connectivity
+-nfc_se_transaction
+-nfc_send_to_raw_sock
+-nfc_set_remote_general_bytes
+-nfc_target_lost
+-nfc_targets_found
+-nfc_tm_activated
+-nfc_tm_data_received
+-nfc_tm_deactivated
+-nfc_unregister_device
+-nfc_vendor_cmd_reply
+-of_can_transceiver
+-open_candev
+-ppp_channel_index
+-ppp_dev_name
+-ppp_input
+-ppp_input_error
+-ppp_output_wakeup
+-ppp_register_channel
+-ppp_register_compressor
+-ppp_register_net_channel
+-ppp_unit_number
+-ppp_unregister_channel
+-ppp_unregister_compressor
+-pppox_compat_ioctl
+-pppox_ioctl
+-pppox_unbind_sock
+-qca_read_soc_version
+-qca_send_pre_shutdown_cmd
+-qca_set_bdaddr
+-qca_set_bdaddr_rome
+-qca_uart_setup
+-register_candev
+-register_pppox_proto
+-rfkill_alloc
+-rfkill_blocked
+-rfkill_destroy
+-rfkill_find_type
+-rfkill_get_led_trigger_name
+-rfkill_init_sw_state
+-rfkill_pause_polling
+-rfkill_register
+-rfkill_resume_polling
+-rfkill_set_hw_state_reason
+-rfkill_set_led_trigger_name
+-rfkill_set_states
+-rfkill_set_sw_state
+-rfkill_soft_blocked
+-rfkill_unregister
+-rtl8152_get_version
+-safe_candev_priv
+-slhc_compress
+-slhc_free
+-slhc_init
+-slhc_remember
+-slhc_toss
+-slhc_uncompress
+-tipc_dump_done
+-tipc_dump_start
+-tipc_nl_sk_walk
+-tipc_sk_fill_sock_diag
+-unregister_candev
+-unregister_pppox_proto
+-usb_serial_claim_interface
+-usb_serial_deregister_drivers
+-usb_serial_generic_chars_in_buffer
+-usb_serial_generic_close
+-usb_serial_generic_get_icount
+-usb_serial_generic_open
+-usb_serial_generic_process_read_urb
+-usb_serial_generic_read_bulk_callback
+-usb_serial_generic_resume
+-usb_serial_generic_submit_read_urbs
+-usb_serial_generic_throttle
+-usb_serial_generic_tiocmiwait
+-usb_serial_generic_unthrottle
+-usb_serial_generic_wait_until_sent
+-usb_serial_generic_write
+-usb_serial_generic_write_bulk_callback
+-usb_serial_generic_write_start
+-usb_serial_handle_dcd_change
+-usb_serial_port_softint
+-usb_serial_register_drivers
+-usb_serial_resume
+-usb_serial_suspend
+-usbnet_cdc_bind
+-usbnet_cdc_status
+-usbnet_cdc_unbind
+-usbnet_cdc_update_filter
+-usbnet_cdc_zte_rx_fixup
+-usbnet_change_mtu
+-usbnet_defer_kevent
+-usbnet_device_suggests_idle
+-usbnet_disconnect
+-usbnet_ether_cdc_bind
+-usbnet_generic_cdc_bind
+-usbnet_get_drvinfo
+-usbnet_get_endpoints
+-usbnet_get_ethernet_addr
+-usbnet_get_link
+-usbnet_get_link_ksettings_internal
+-usbnet_get_link_ksettings_mii
+-usbnet_get_msglevel
+-usbnet_link_change
+-usbnet_manage_power
+-usbnet_nway_reset
+-usbnet_open
+-usbnet_pause_rx
+-usbnet_probe
+-usbnet_purge_paused_rxq
+-usbnet_read_cmd
+-usbnet_read_cmd_nopm
+-usbnet_resume
+-usbnet_resume_rx
+-usbnet_set_link_ksettings_mii
+-usbnet_set_msglevel
+-usbnet_set_rx_mode
+-usbnet_skb_return
+-usbnet_start_xmit
+-usbnet_status_start
+-usbnet_status_stop
+-usbnet_stop
+-usbnet_suspend
+-usbnet_tx_timeout
+-usbnet_unlink_rx_urbs
+-usbnet_update_max_qlen
+-usbnet_write_cmd
+-usbnet_write_cmd_async
+-usbnet_write_cmd_nopm
+-wpan_phy_find
+-wpan_phy_for_each
+-wpan_phy_free
+-wpan_phy_new
+-wpan_phy_register
+-wpan_phy_unregister
+-wwan_create_port
+-wwan_port_get_drvdata
+-wwan_port_rx
+-wwan_port_txoff
+-wwan_port_txon
+-wwan_register_ops
+-wwan_remove_port
+-wwan_unregister_ops
+\ No newline at end of file
+diff --git a/android/abi_gki_protected_exports_x86_64 b/android/abi_gki_protected_exports_x86_64
+deleted file mode 100644
+index 7d97572e6..000000000
+--- a/android/abi_gki_protected_exports_x86_64
++++ /dev/null
+@@ -1,345 +0,0 @@
+-__hci_cmd_send
+-__hci_cmd_sync
+-__hci_cmd_sync_ev
+-__hci_cmd_sync_sk
+-__hci_cmd_sync_status
+-__hci_cmd_sync_status_sk
+-__nfc_alloc_vendor_cmd_reply_skb
+-alloc_can_err_skb
+-alloc_can_skb
+-alloc_candev_mqs
+-alloc_canfd_skb
+-alloc_canxl_skb
+-arc4_crypt
+-arc4_setkey
+-baswap
+-bt_accept_dequeue
+-bt_accept_enqueue
+-bt_accept_unlink
+-bt_debugfs
+-bt_err
+-bt_err_ratelimited
+-bt_info
+-bt_procfs_cleanup
+-bt_procfs_init
+-bt_sock_ioctl
+-bt_sock_link
+-bt_sock_poll
+-bt_sock_reclassify_lock
+-bt_sock_recvmsg
+-bt_sock_register
+-bt_sock_stream_recvmsg
+-bt_sock_unlink
+-bt_sock_unregister
+-bt_sock_wait_ready
+-bt_sock_wait_state
+-bt_status
+-bt_to_errno
+-bt_warn
+-bt_warn_ratelimited
+-btbcm_check_bdaddr
+-btbcm_finalize
+-btbcm_initialize
+-btbcm_patchram
+-btbcm_read_pcm_int_params
+-btbcm_set_bdaddr
+-btbcm_setup_apple
+-btbcm_setup_patchram
+-btbcm_write_pcm_int_params
+-can_bus_off
+-can_change_mtu
+-can_change_state
+-can_dropped_invalid_skb
+-can_eth_ioctl_hwts
+-can_ethtool_op_get_ts_info_hwts
+-can_fd_dlc2len
+-can_fd_len2dlc
+-can_free_echo_skb
+-can_get_echo_skb
+-can_get_state_str
+-can_proto_register
+-can_proto_unregister
+-can_put_echo_skb
+-can_rx_offload_add_fifo
+-can_rx_offload_add_manual
+-can_rx_offload_add_timestamp
+-can_rx_offload_del
+-can_rx_offload_enable
+-can_rx_offload_get_echo_skb
+-can_rx_offload_irq_finish
+-can_rx_offload_irq_offload_fifo
+-can_rx_offload_irq_offload_timestamp
+-can_rx_offload_queue_tail
+-can_rx_offload_queue_timestamp
+-can_rx_offload_threaded_irq_finish
+-can_rx_register
+-can_rx_unregister
+-can_send
+-can_skb_get_frame_len
+-can_sock_destruct
+-cdc_ncm_bind_common
+-cdc_ncm_change_mtu
+-cdc_ncm_fill_tx_frame
+-cdc_ncm_rx_fixup
+-cdc_ncm_rx_verify_ndp16
+-cdc_ncm_rx_verify_ndp32
+-cdc_ncm_rx_verify_nth16
+-cdc_ncm_rx_verify_nth32
+-cdc_ncm_select_altsetting
+-cdc_ncm_tx_fixup
+-cdc_ncm_unbind
+-close_candev
+-free_candev
+-generic_mii_ioctl
+-h4_recv_buf
+-hci_alloc_dev_priv
+-hci_cmd_sync
+-hci_cmd_sync_cancel
+-hci_cmd_sync_queue
+-hci_conn_check_secure
+-hci_conn_security
+-hci_conn_switch_role
+-hci_free_dev
+-hci_get_route
+-hci_mgmt_chan_register
+-hci_mgmt_chan_unregister
+-hci_recv_diag
+-hci_recv_frame
+-hci_register_cb
+-hci_register_dev
+-hci_release_dev
+-hci_reset_dev
+-hci_resume_dev
+-hci_set_fw_info
+-hci_set_hw_info
+-hci_suspend_dev
+-hci_uart_register_device
+-hci_uart_tx_wakeup
+-hci_uart_unregister_device
+-hci_unregister_cb
+-hci_unregister_dev
+-hidp_hid_driver
+-ieee802154_alloc_hw
+-ieee802154_configure_durations
+-ieee802154_free_hw
+-ieee802154_hdr_peek
+-ieee802154_hdr_peek_addrs
+-ieee802154_hdr_pull
+-ieee802154_hdr_push
+-ieee802154_max_payload
+-ieee802154_register_hw
+-ieee802154_rx_irqsafe
+-ieee802154_stop_queue
+-ieee802154_unregister_hw
+-ieee802154_wake_queue
+-ieee802154_xmit_complete
+-ieee802154_xmit_error
+-ieee802154_xmit_hw_error
+-l2cap_add_psm
+-l2cap_chan_close
+-l2cap_chan_connect
+-l2cap_chan_create
+-l2cap_chan_del
+-l2cap_chan_list
+-l2cap_chan_put
+-l2cap_chan_send
+-l2cap_chan_set_defaults
+-l2cap_conn_get
+-l2cap_conn_put
+-l2cap_is_socket
+-l2cap_register_user
+-l2cap_unregister_user
+-l2tp_recv_common
+-l2tp_session_create
+-l2tp_session_dec_refcount
+-l2tp_session_delete
+-l2tp_session_get
+-l2tp_session_get_by_ifname
+-l2tp_session_get_nth
+-l2tp_session_inc_refcount
+-l2tp_session_register
+-l2tp_session_set_header_len
+-l2tp_sk_to_tunnel
+-l2tp_tunnel_create
+-l2tp_tunnel_dec_refcount
+-l2tp_tunnel_delete
+-l2tp_tunnel_get
+-l2tp_tunnel_get_nth
+-l2tp_tunnel_get_session
+-l2tp_tunnel_inc_refcount
+-l2tp_tunnel_register
+-l2tp_udp_encap_recv
+-l2tp_xmit_skb
+-lowpan_header_compress
+-lowpan_header_decompress
+-lowpan_nhc_add
+-lowpan_nhc_del
+-lowpan_register_netdev
+-lowpan_register_netdevice
+-lowpan_unregister_netdev
+-lowpan_unregister_netdevice
+-mii_check_gmii_support
+-mii_check_link
+-mii_check_media
+-mii_ethtool_get_link_ksettings
+-mii_ethtool_gset
+-mii_ethtool_set_link_ksettings
+-mii_ethtool_sset
+-mii_link_ok
+-mii_nway_restart
+-nfc_add_se
+-nfc_alloc_recv_skb
+-nfc_allocate_device
+-nfc_class
+-nfc_dep_link_is_up
+-nfc_driver_failure
+-nfc_find_se
+-nfc_fw_download_done
+-nfc_get_local_general_bytes
+-nfc_proto_register
+-nfc_proto_unregister
+-nfc_register_device
+-nfc_remove_se
+-nfc_se_connectivity
+-nfc_se_transaction
+-nfc_send_to_raw_sock
+-nfc_set_remote_general_bytes
+-nfc_target_lost
+-nfc_targets_found
+-nfc_tm_activated
+-nfc_tm_data_received
+-nfc_tm_deactivated
+-nfc_unregister_device
+-nfc_vendor_cmd_reply
+-of_can_transceiver
+-open_candev
+-ppp_channel_index
+-ppp_dev_name
+-ppp_input
+-ppp_input_error
+-ppp_output_wakeup
+-ppp_register_channel
+-ppp_register_compressor
+-ppp_register_net_channel
+-ppp_unit_number
+-ppp_unregister_channel
+-ppp_unregister_compressor
+-pppox_compat_ioctl
+-pppox_ioctl
+-pppox_unbind_sock
+-qca_read_soc_version
+-qca_send_pre_shutdown_cmd
+-qca_set_bdaddr
+-qca_set_bdaddr_rome
+-qca_uart_setup
+-register_candev
+-register_pppox_proto
+-rfkill_alloc
+-rfkill_blocked
+-rfkill_destroy
+-rfkill_find_type
+-rfkill_get_led_trigger_name
+-rfkill_init_sw_state
+-rfkill_pause_polling
+-rfkill_register
+-rfkill_resume_polling
+-rfkill_set_hw_state_reason
+-rfkill_set_led_trigger_name
+-rfkill_set_states
+-rfkill_set_sw_state
+-rfkill_soft_blocked
+-rfkill_unregister
+-rtl8152_get_version
+-safe_candev_priv
+-slhc_compress
+-slhc_free
+-slhc_init
+-slhc_remember
+-slhc_toss
+-slhc_uncompress
+-tipc_dump_done
+-tipc_dump_start
+-tipc_nl_sk_walk
+-tipc_sk_fill_sock_diag
+-unregister_candev
+-unregister_pppox_proto
+-usb_serial_claim_interface
+-usb_serial_deregister_drivers
+-usb_serial_generic_chars_in_buffer
+-usb_serial_generic_close
+-usb_serial_generic_get_icount
+-usb_serial_generic_open
+-usb_serial_generic_process_read_urb
+-usb_serial_generic_read_bulk_callback
+-usb_serial_generic_resume
+-usb_serial_generic_submit_read_urbs
+-usb_serial_generic_throttle
+-usb_serial_generic_tiocmiwait
+-usb_serial_generic_unthrottle
+-usb_serial_generic_wait_until_sent
+-usb_serial_generic_write
+-usb_serial_generic_write_bulk_callback
+-usb_serial_generic_write_start
+-usb_serial_handle_dcd_change
+-usb_serial_port_softint
+-usb_serial_register_drivers
+-usb_serial_resume
+-usb_serial_suspend
+-usbnet_cdc_bind
+-usbnet_cdc_status
+-usbnet_cdc_unbind
+-usbnet_cdc_update_filter
+-usbnet_cdc_zte_rx_fixup
+-usbnet_change_mtu
+-usbnet_defer_kevent
+-usbnet_device_suggests_idle
+-usbnet_disconnect
+-usbnet_ether_cdc_bind
+-usbnet_generic_cdc_bind
+-usbnet_get_drvinfo
+-usbnet_get_endpoints
+-usbnet_get_ethernet_addr
+-usbnet_get_link
+-usbnet_get_link_ksettings_internal
+-usbnet_get_link_ksettings_mii
+-usbnet_get_msglevel
+-usbnet_link_change
+-usbnet_manage_power
+-usbnet_nway_reset
+-usbnet_open
+-usbnet_pause_rx
+-usbnet_probe
+-usbnet_purge_paused_rxq
+-usbnet_read_cmd
+-usbnet_read_cmd_nopm
+-usbnet_resume
+-usbnet_resume_rx
+-usbnet_set_link_ksettings_mii
+-usbnet_set_msglevel
+-usbnet_set_rx_mode
+-usbnet_skb_return
+-usbnet_start_xmit
+-usbnet_status_start
+-usbnet_status_stop
+-usbnet_stop
+-usbnet_suspend
+-usbnet_tx_timeout
+-usbnet_unlink_rx_urbs
+-usbnet_update_max_qlen
+-usbnet_write_cmd
+-usbnet_write_cmd_async
+-usbnet_write_cmd_nopm
+-wpan_phy_find
+-wpan_phy_for_each
+-wpan_phy_free
+-wpan_phy_new
+-wpan_phy_register
+-wpan_phy_unregister
+-wwan_create_port
+-wwan_port_get_drvdata
+-wwan_port_rx
+-wwan_port_txoff
+-wwan_port_txon
+-wwan_register_ops
+-wwan_remove_port
+-wwan_unregister_ops
+\ No newline at end of file
+diff --git a/arch/arm64/configs/gki_defconfig b/arch/arm64/configs/gki_defconfig
+index abf7b41cd..47a510faf 100644
+--- a/arch/arm64/configs/gki_defconfig
++++ b/arch/arm64/configs/gki_defconfig
+@@ -736,3 +736,27 @@ CONFIG_KUNIT=y
+ CONFIG_KUNIT_DEBUGFS=y
+ # CONFIG_KUNIT_DEFAULT_ENABLED is not set
+ # CONFIG_RUNTIME_TESTING_MENU is not set
++
++# --- C6 minimal Docker delta (kABI-safe; SYSVIPC via DroidSpaces 6_7_8 padding) ---
++CONFIG_SYSVIPC=y
++CONFIG_IPC_NS=y
++CONFIG_PID_NS=y
++CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y
++
++# --- Nethunter BT delta (VHCI; RFCOMM/H4/BINDER already in GKI base) ---
++CONFIG_BT_HCIVHCI=m
++
++# --- C7 pass-2 REVERTED 2026-09-27 (gate red: 451 drifts via conntrack->struct net; see C8 analysis) ---
++# CONFIG_BRIDGE_NETFILTER is not set
++# CONFIG_NF_TABLES is not set
++# CONFIG_NFT_CT is not set
++# CONFIG_NFT_NAT is not set
++# CONFIG_NFT_MASQ is not set
++# CONFIG_NFT_FIB is not set
++# CONFIG_NFT_FIB_IPV4 is not set
++# CONFIG_NFT_FIB_IPV6 is not set
++# CONFIG_IP6_NF_NAT is not set
++# CONFIG_IP6_NF_TARGET_MASQUERADE is not set
++# CONFIG_NETFILTER_XT_TARGET_MASQUERADE is not set
++# CONFIG_VXLAN is not set
++# CONFIG_BRIDGE_VLAN_FILTERING is not set
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index f5b50c82a..17a9d43c0 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1096,8 +1096,8 @@ struct task_struct {
+ 	struct nameidata		*nameidata;
+ 
+ #ifdef CONFIG_SYSVIPC
+-	struct sysv_sem			sysvsem;
+-	struct sysv_shm			sysvshm;
++	// struct sysv_sem			sysvsem;   /* moved to ANDROID_KABI_USE slot 6 (DroidSpaces kABI pad) */
++	// struct sysv_shm			sysvshm;   /* moved to ANDROID_KABI_REPLACE slots 7+8 */
+ #endif
+ #ifdef CONFIG_DETECT_HUNG_TASK
+ 	unsigned long			last_switch_count;
+@@ -1551,9 +1551,14 @@ struct task_struct {
+ 	ANDROID_KABI_RESERVE(3);
+ 	ANDROID_KABI_RESERVE(4);
+ 	ANDROID_KABI_RESERVE(5);
++#ifdef CONFIG_SYSVIPC
++	ANDROID_KABI_USE(6, struct sysv_sem sysvsem);
++	_ANDROID_KABI_REPLACE(ANDROID_KABI_RESERVE(7); ANDROID_KABI_RESERVE(8), struct sysv_shm sysvshm);
++#else
+ 	ANDROID_KABI_RESERVE(6);
+ 	ANDROID_KABI_RESERVE(7);
+ 	ANDROID_KABI_RESERVE(8);
++#endif
+ 
+ 	/*
+ 	 * New fields for task_struct should be added above here, so that
+diff --git a/modules.bzl b/modules.bzl
+index 52d92225a..1e8329c79 100644
+--- a/modules.bzl
++++ b/modules.bzl
+@@ -13,6 +13,7 @@ _COMMON_GKI_MODULES_LIST = [
+     "drivers/bluetooth/btqca.ko",
+     "drivers/bluetooth/btsdio.ko",
+     "drivers/bluetooth/hci_uart.ko",
++    "drivers/bluetooth/hci_vhci.ko",
+     "drivers/net/can/dev/can-dev.ko",
+     "drivers/net/can/slcan/slcan.ko",
+     "drivers/net/can/vcan.ko",
+diff --git a/net/wireless/mlme.c b/net/wireless/mlme.c
+index 775cac4d6..c654f1cb3 100644
+--- a/net/wireless/mlme.c
++++ b/net/wireless/mlme.c
+@@ -765,25 +765,10 @@ int cfg80211_mlme_mgmt_tx(struct cfg80211_registered_device *rdev,
+ 			break;
+ 		case NL80211_IFTYPE_STATION:
+ 		case NL80211_IFTYPE_P2P_CLIENT:
+-			if (!wdev->connected) {
+-				err = -ENOTCONN;
+-				break;
+-			}
+-
+-			/* FIXME: MLD may address this differently */
+-
+-			if (!ether_addr_equal(wdev->u.client.connected_addr,
+-					      mgmt->bssid)) {
+-				err = -ENOTCONN;
+-				break;
+-			}
+-
+-			/* for station, check that DA is the AP */
+-			if (!ether_addr_equal(wdev->u.client.connected_addr,
+-					      mgmt->da)) {
+-				err = -ENOTCONN;
+-				break;
+-			}
++			/* OP12-RESEARCH: allow non-public action frames with
++			 * arbitrary addr1(DA)/addr3(BSSID) on a STA; bypass the
++			 * connected-AP address checks. Original upstream logic
++			 * required bssid==da==connected AP. */
+ 			break;
+ 		case NL80211_IFTYPE_AP:
+ 		case NL80211_IFTYPE_P2P_GO:
+@@ -820,7 +805,10 @@ int cfg80211_mlme_mgmt_tx(struct cfg80211_registered_device *rdev,
+ 			return err;
+ 	}
+ 
+-	if (!cfg80211_allowed_address(wdev, mgmt->sa) &&
++	/* OP12-RESEARCH: allow arbitrary source MAC (addr2) for mgmt-frame
++	 * injection. Upstream pins SA to the interface MAC (anti-spoof); the
++	 * `0 &&` keeps the helpers referenced but never rejects. */
++	if (0 && !cfg80211_allowed_address(wdev, mgmt->sa) &&
+ 	    !cfg80211_allowed_random_address(wdev, mgmt))
+ 		return -EINVAL;
+ 
+-- 
+2.47.3
+

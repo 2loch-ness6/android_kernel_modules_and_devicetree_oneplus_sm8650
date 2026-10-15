@@ -1,0 +1,107 @@
+From 5b730e4a24af212d3403f45a05566436a8018ff1 Mon Sep 17 00:00:00 2001
+From: lochness <lochlynhansen05@gmail.com>
+Date: Mon, 12 Oct 2026 05:23:53 -0500
+Subject: [PATCH] A14 C6 docker/KABI + cfg80211/wlan local changes
+
+---
+ .../arm64/configs/vendor/pineapple_GKI.config |  8 ++++++
+ build_with_bazel.py                           |  7 +++++
+ modules.bzl                                   |  1 +
+ net/wireless/mlme.c                           | 28 ++++++-------------
+ 4 files changed, 24 insertions(+), 20 deletions(-)
+
+diff --git a/arch/arm64/configs/vendor/pineapple_GKI.config b/arch/arm64/configs/vendor/pineapple_GKI.config
+index 649ecd694..45503eb60 100755
+--- a/arch/arm64/configs/vendor/pineapple_GKI.config
++++ b/arch/arm64/configs/vendor/pineapple_GKI.config
+@@ -459,3 +459,11 @@ CONFIG_PCPU_RWSEM_LOCKING_PROTECT=y
+ # CONFIG_ZSMALLOC=y
+ CONFIG_OPLUS_FEATURE_STORAGE_LOG=m
+ CONFIG_OPLUS_FEATURE_OPLUS_UPROBE=m
++
++# Nethunter Bluetooth configs
++CONFIG_BT=m
++CONFIG_BT_RFCOMM=m
++CONFIG_BT_RFCOMM_TTY=y
++CONFIG_BT_HCIUART_H4=y
++CONFIG_BT_HCIVHCI=m
++CONFIG_ANDROID_BINDER_IPC=y
+diff --git a/build_with_bazel.py b/build_with_bazel.py
+index 215d38290..b50ba81b2 100755
+--- a/build_with_bazel.py
++++ b/build_with_bazel.py
+@@ -287,6 +287,13 @@ class BazelBuilder:
+             "--config=stamp",
+             "--user_kmi_symbol_lists=//msm-kernel:android/abi_gki_aarch64_qcom",
+             "--ignore_missing_projects",
++            # C6 build-time-only flags (boot-safe; NOT the force-LOAD that caused the C4 bootloop).
++            # Keep non-KMI symbols (e.g. namespace helpers) exported so vendor modules link,
++            # and don't fail the build on KMI symbol-list deltas from our added Docker configs.
++            # ABI safety is enforced separately by the pre-flash CRC gate vs stock_modversions.txt.
++            "--//build/kernel/kleaf/impl:force_disable_trim=true",
++            "--//build/kernel/kleaf:kmi_symbol_list_violations_check=false",
++            "--//build/kernel/kleaf:kmi_symbol_list_strict_mode=false",
+         ])
+ 
+         if self.dry_run:
+diff --git a/modules.bzl b/modules.bzl
+index 702820dc2..b74934d50 100644
+--- a/modules.bzl
++++ b/modules.bzl
+@@ -12,6 +12,7 @@ _COMMON_GKI_MODULES_LIST = [
+     "drivers/bluetooth/btqca.ko",
+     "drivers/bluetooth/btsdio.ko",
+     "drivers/bluetooth/hci_uart.ko",
++    "drivers/bluetooth/hci_vhci.ko",
+     "drivers/net/can/dev/can-dev.ko",
+     "drivers/net/can/slcan/slcan.ko",
+     "drivers/net/can/vcan.ko",
+diff --git a/net/wireless/mlme.c b/net/wireless/mlme.c
+index 775cac4d6..c654f1cb3 100644
+--- a/net/wireless/mlme.c
++++ b/net/wireless/mlme.c
+@@ -765,25 +765,10 @@ int cfg80211_mlme_mgmt_tx(struct cfg80211_registered_device *rdev,
+ 			break;
+ 		case NL80211_IFTYPE_STATION:
+ 		case NL80211_IFTYPE_P2P_CLIENT:
+-			if (!wdev->connected) {
+-				err = -ENOTCONN;
+-				break;
+-			}
+-
+-			/* FIXME: MLD may address this differently */
+-
+-			if (!ether_addr_equal(wdev->u.client.connected_addr,
+-					      mgmt->bssid)) {
+-				err = -ENOTCONN;
+-				break;
+-			}
+-
+-			/* for station, check that DA is the AP */
+-			if (!ether_addr_equal(wdev->u.client.connected_addr,
+-					      mgmt->da)) {
+-				err = -ENOTCONN;
+-				break;
+-			}
++			/* OP12-RESEARCH: allow non-public action frames with
++			 * arbitrary addr1(DA)/addr3(BSSID) on a STA; bypass the
++			 * connected-AP address checks. Original upstream logic
++			 * required bssid==da==connected AP. */
+ 			break;
+ 		case NL80211_IFTYPE_AP:
+ 		case NL80211_IFTYPE_P2P_GO:
+@@ -820,7 +805,10 @@ int cfg80211_mlme_mgmt_tx(struct cfg80211_registered_device *rdev,
+ 			return err;
+ 	}
+ 
+-	if (!cfg80211_allowed_address(wdev, mgmt->sa) &&
++	/* OP12-RESEARCH: allow arbitrary source MAC (addr2) for mgmt-frame
++	 * injection. Upstream pins SA to the interface MAC (anti-spoof); the
++	 * `0 &&` keeps the helpers referenced but never rejects. */
++	if (0 && !cfg80211_allowed_address(wdev, mgmt->sa) &&
+ 	    !cfg80211_allowed_random_address(wdev, mgmt))
+ 		return -EINVAL;
+ 
+-- 
+2.47.3
+

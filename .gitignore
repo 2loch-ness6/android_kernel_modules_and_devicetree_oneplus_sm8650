@@ -1,0 +1,53 @@
+# ==========================================================================
+# op12-kernel .gitignore
+# repo (AOSP) + Bazel kernel tree. Tracks kernel_platform/ and vendor/ source;
+# everything generated, synced, or staged is ignored below.
+# ==========================================================================
+
+# --- repo tool metadata ---
+.repo
+
+# --- build / sync logs ---
+*.log
+
+# --- build output ---
+out/
+kernel_platform/out/
+
+# Bazel convenience symlinks (point into kernel_platform/out/)
+kernel_platform/bazel-bin
+kernel_platform/bazel-kernel_platform
+kernel_platform/bazel-out
+kernel_platform/bazel-testlogs
+
+# --- repo-synced source / toolchains (managed by `repo sync`, not this repo) ---
+kernel_platform/common/
+kernel_platform/msm-kernel/
+kernel_platform/external/
+kernel_platform/prebuilts/
+kernel_platform/vendor
+kernel_platform/tools/mkbootimg/
+kernel_platform/build/bazel_common_rules/
+kernel_platform/build/build-tools/sysroot
+kernel_platform/build/prebuilts/
+kernel_platform/build/abl_extensions.bzl
+kernel_platform/build/msm_kernel_extensions.bzl
+
+# --- built artifacts ---
+*.ko
+op12_cfg80211_toggle.zip
+op12_wifi_monitor.zip
+
+# --- large staging / reference / work-output dirs (regenerable) ---
+cfg80211-work/
+vendor-ref/
+serve_cfg80211/
+pkg/
+magisk-op12-wifi-monitor/
+
+# ==========================================================================
+# Intentionally NOT ignored (tracked source you edit):
+#   docs/
+#   patches-a14-c6/
+#   patches-a15-bt-cfg80211/
+# ==========================================================================
